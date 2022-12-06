@@ -3,11 +3,15 @@ extern crate chrono;
 mod time_to_unix;
 mod timestamp_routes;
 mod utc_routes;
-use time_to_unix::{find_unix_time};
-use timestamp_routes::{unix_time,unix_time_fmt,unix_time_utc_fmt};
-use utc_routes::{get_utc_time};
+
+use chrono::NaiveDate;
+use std::collections::HashMap;
 use rocket::shield::Shield;
 use rocket::shield::XssFilter;
+
+use time_to_unix::find_unix_time;
+use timestamp_routes::{unix_time,unix_time_fmt,unix_time_utc_fmt};
+use utc_routes::get_utc_time;
 
 #[get("/")]
 fn index() -> String {
@@ -15,7 +19,7 @@ fn index() -> String {
 }
 
 #[launch]
-fn rocket() -> _ {
+fn rocket() -> Shield<XssFilter> {
     let shield_config: Shield = Shield::default().enable(XssFilter::default());
     rocket::build().attach(shield_config).mount("/", routes![
         index, 
